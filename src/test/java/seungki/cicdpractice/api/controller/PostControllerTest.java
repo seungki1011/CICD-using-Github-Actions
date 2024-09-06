@@ -43,6 +43,7 @@ class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
+//                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
