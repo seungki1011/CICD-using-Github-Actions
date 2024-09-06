@@ -32,7 +32,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'azul'
+          distribution: 'temurin'
           java-version: '17'
 
       # 4. 의존성 설치 및 빌드
