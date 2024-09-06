@@ -42,8 +42,8 @@ class PostControllerTest {
         mockMvc.perform(post("/api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-//                .andExpect(status().isCreated())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isCreated())
+//                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
