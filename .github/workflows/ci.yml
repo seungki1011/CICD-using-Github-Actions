@@ -53,16 +53,26 @@ jobs:
 
       # 6. 슬랙 채널로 빌드의 성공 또는 실패에 따라 알림 보내기
       - name: Slack message with build result
-        if: success() || failure()
-        uses: slackapi/slack-github-action@v1.27.0
+        if: always() # 이전의 Step들의 성공과 실패 여부에 상관 없이 항상 실행
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          PULL_REQUEST_JOB_STATUS: ${{ job.status }}
-          PULL_REQUEST_JOB_STATUS_COLOR: ${{ job.status == 'success' && vars.COLOR_GREEN || job.status == 'failure' && vars.COLOR_RED || vars.COLOR_ORANGE }}
-        with:
-          channel-id: C07L4BQTKGE
-          payload-file-path: ./slack/ci_slack_message.json
+
+#      - name: Slack message with build result
+#        if: success() || failure()
+#        uses: slackapi/slack-github-action@v1.27.0
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+#          PULL_REQUEST_JOB_STATUS: ${{ job.status }}
+#          PULL_REQUEST_JOB_STATUS_COLOR: ${{ job.status == 'success' && vars.COLOR_GREEN || job.status == 'failure' && vars.COLOR_RED || vars.COLOR_ORANGE }}
+#        with:
+#          channel-id: C07L4BQTKGE
+#          payload-file-path: ./slack/ci_slack_message.json
 
       # --- 아래 방법은 버그 발생 ---
       # https://github.com/slackapi/slack-github-action/issues/203 참고
