@@ -1,30 +1,24 @@
-# 워크플로우의 이름을 지정합니다
-# 대시보드에서 워크플로우를 구분할 때 사용됩니다
 name: CI Pipeline
 
-# Event
-on: # 워크플로우가 실행될 조건을 정의합니다
-  pull_request: # PR을 조건으로 설정합니다
+on:
+  pull_request:
     branches:
-      - test # test 브랜치로 PR이 열리면 실행되도록 지정
+      - '**'  # 모든 브랜치에 대해 PR이 생성될 때 실행
+  push:
+    branches:
+      - dev # dev 브랜치에 푸시될 때 실행
 
-# Jobs: 필요한 Job을 병렬 또는 (의존성에 의해)순차적으로 실행
-jobs: # 아래 계층에 수행할 Job을 정의합니다
-
-  # Build Job
+jobs:
   build:
-    runs-on: ubuntu-latest # 해당 Job의 러너 환경을 지정합니다
+    runs-on: ubuntu-latest
 
-    # 아래에 build의 Step들을 정의합니다
     steps:
-      # 1. 리포지토리에서 소스 코드를 체크아웃(복제)
-      - name: Checkout code # name으로 각 Step의 이름을 부여합니다
-        uses: actions/checkout@v3 # uses를 통해 액션을 호출합니다
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      # 2. Gradle 라이브러리 캐싱
       - name: Cache Gradle packages
         uses: actions/cache@v3
-        with: # with를 통해 액션에 대한 추가적인 설정을 지정할 수 있습니다
+        with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
@@ -32,29 +26,23 @@ jobs: # 아래 계층에 수행할 Job을 정의합니다
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 3. Java 17 설치
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. gradlew에 권한 부여
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew # run으로 직접 명령어를 실행할 수 있습니다
 
-      # 5. 의존성 설치 및 빌드
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
-  # Test Job
-  # 빌드에서 테스트를 진행하기 때문에 해당 Job은 제외해도 됩니다. 그러나 needs를 설명하기 위해 편의상 추가했습니다.
   test:
     runs-on: ubuntu-latest
-    needs: build  # build가 성공적으로 완료되어야 수행된다는 의미(의존성 설정)
-
+    if: github.ref == 'refs/heads/dev'  # dev 브랜치로 푸시될 때만 실행하는 조건문
     steps:
-      # 기존 체크아웃, JDK 설치 과정
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -64,6 +52,5 @@ jobs: # 아래 계층에 수행할 Job을 정의합니다
           distribution: 'temurin'
           java-version: '17'
 
-      # 6. 테스트 실행
       - name: Run tests
         run: ./gradlew test --no-daemon
