@@ -168,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 리포지토리에서 소스 코드를 체크아웃
+      # 1. 리포지토리에서 소스 코드를 체크아웃(복제)
       - name: Checkout code
         uses: actions/checkout@v3
 
