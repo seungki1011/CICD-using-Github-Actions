@@ -6,6 +6,14 @@ on:
     branches:
       - test
 
+env:
+  PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+  PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+  PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
+  PULL_REQUEST_EVENT_NAME: ${{ github.event_name }}
+  PULL_REQUEST_LOGS_URL: ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
+  PULL_REQUEST_COMMIT_URL: ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}
+
 # Jobs: 필요한 Job을 병렬 또는 순차적으로 실행
 jobs:
   # Build Job
@@ -44,32 +52,46 @@ jobs:
         run: ./gradlew build --no-daemon
 
       # 6. 슬랙 채널로 빌드의 성공 또는 실패에 따라 알림 보내기
-      - name: Notify Slack on Success
-        if: success() # 이전 스텝이 모두 성공하면 해당 스텝을 실행하는 조건문
-        id: slack-success
+      - name: Slack message with build result
+        if: success() || failure()
         uses: slackapi/slack-github-action@v1.27.0
-        with:
-          payload-file-path: "./slack/success-payload-content.json" # 미리 정의된 json 파일에 payload를 정의해서 사용가능
-          # payload를 json 형태로 직접 제공해서 사용할 수 있다
-          # payload는 payload-file-path 보다 높은 우선순위를 가진다
-          # payload: |
-          #      {
-          #        "key": "value",
-          #        "foo": "bar"
-          #      }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          PULL_REQUEST_JOB_STATUS: ${{ job.status }}
+          PULL_REQUEST_JOB_STATUS_COLOR: ${{ job.status == 'success' && vars.COLOR_GREEN || job.status == 'failure' && vars.COLOR_RED || vars.COLOR_ORANGE }}
+        with:
+          channel-id: C07L4BQTKGE
+          payload-file-path: ./slack/ci_slack_message.json
 
-      - name: Notify Slack on Failure
-        if: failure() # 이전 스텝 중 하나라도 실패하면 해당 스텝을 실행하는 조건문
-        id: slack-failure
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          payload-file-path: "./slack/failure-payload-content.json"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      # --- 아래 방법은 버그 발생 ---
+      # https://github.com/slackapi/slack-github-action/issues/203 참고
+#      - name: Notify Slack on Success
+#        if: success() # 이전 스텝이 모두 성공하면 해당 스텝을 실행하는 조건문
+#        id: slack-success
+#        uses: slackapi/slack-github-action@v1.27.0
+#        with:
+#          payload-file-path: "./slack/success-payload-content.json" # 미리 정의된 json 파일에 payload를 정의해서 사용가능
+#          # payload를 json 형태로 직접 제공해서 사용할 수 있다
+#          # payload는 payload-file-path 보다 높은 우선순위를 가진다
+#          # payload: |
+#          #      {
+#          #        "key": "value",
+#          #        "foo": "bar"
+#          #      }
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+#
+#
+#      - name: Notify Slack on Failure
+#        if: failure() # 이전 스텝 중 하나라도 실패하면 해당 스텝을 실행하는 조건문
+#        id: slack-failure
+#        uses: slackapi/slack-github-action@v1.27.0
+#        with:
+#          payload-file-path: "./slack/failure-payload-content.json"
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
 
   # Test Job
   # 빌드에서 테스트를 진행하기 때문에 해당 Job은 제외해도 된다. 그러나 needs를 설명하기 위해 편의상 추가했다.
