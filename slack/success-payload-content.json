@@ -1,0 +1,38 @@
+{
+  "channel": "C07L4BQTKGE",
+  "attachments": [
+    {
+      "color": "#36a64f",
+      "title": "${{ github.repository }}",
+      "title_link": "https://github.com/${{github.repository}}",
+      "text": "✅ CI/CD 파이프라인 성공",
+      "fields": [
+        {
+          "title": "Repository",
+          "value": "${{ github.repository }}",
+          "short": true
+        },
+        {
+          "title": "Tag",
+          "value": "${{ github.ref_name }}",
+          "short": true
+        },
+        {
+          "title": "Commit",
+          "value": "${{ github.sha }}",
+          "short": true
+        },
+        {
+          "title": "Commit Message",
+          "value": "${{ github.event.head_commit.message }}",
+          "short": true
+        },
+        {
+          "title": "Author",
+          "value": "${{ github.event.head_commit.author.name }}",
+          "short": true
+        }
+      ]
+    }
+  ]
+}
