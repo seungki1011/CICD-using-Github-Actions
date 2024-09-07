@@ -1,5 +1,5 @@
 {
-  "channel": "C07L4BQTKGE",
+  "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
   "attachments": [
     {
       "color": "#36a64f",
