@@ -6,20 +6,45 @@
 
 ---
 
+## 📌 목차
+
+1. [🌿 브랜치 설명](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#-%EB%B8%8C%EB%9E%9C%EC%B9%98-%EC%84%A4%EB%AA%85)
+2. [🗣️ GitHub Actions 소개](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EF%B8%8F-github-actions-%EC%86%8C%EA%B0%9C)
+3. [🎯 GitHub Actions 주요 개념](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#-github-actions-%EC%A3%BC%EC%9A%94-%EA%B0%9C%EB%85%90)
+4. [🚀 GitHub Actions 사용법](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#-github-actions-%EC%82%AC%EC%9A%A9%EB%B2%95)
+    * [대략적인 과정](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EB%8C%80%EB%9E%B5%EC%A0%81%EC%9D%B8-%EA%B3%BC%EC%A0%95)
+    * [예시](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%98%88%EC%8B%9C)
+    * [`uses` 필드](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#uses-%ED%95%84%EB%93%9C)
+    * [`run` 필드](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#run-%ED%95%84%EB%93%9C)
+5. [🗃️ 캐싱(Caching)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EF%B8%8F-%EC%BA%90%EC%8B%B1caching)
+6. [❌ 테스트 실패 살펴보기](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%8B%A4%ED%8C%A8-%EC%82%B4%ED%8E%B4%EB%B3%B4%EA%B8%B0)
+7. [☑️ 조건문 사용하기](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EF%B8%8F-%EC%A1%B0%EA%B1%B4%EB%AC%B8-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
+8. [💬 슬랙으로 알림 설정하기(Secrets 사용)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#-%EC%8A%AC%EB%9E%99%EC%9C%BC%EB%A1%9C-%EC%95%8C%EB%A6%BC-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0secrets-%EC%82%AC%EC%9A%A9%ED%95%B4%EB%B3%B4%EA%B8%B0)
+    * [슬랙 채널 추가](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%8A%AC%EB%9E%99-%EC%B1%84%EB%84%90-%EC%B6%94%EA%B0%80)
+    * [슬랙 앱 생성: Webhook URL 발급](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%8A%AC%EB%9E%99-%EC%95%B1-%EC%83%9D%EC%84%B1-webhook-url-%EB%B0%9C%EA%B8%89)
+    * [시크릿 등록](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%8B%9C%ED%81%AC%EB%A6%BF-%EB%93%B1%EB%A1%9D)
+    * [워크플로우 작성1: `slack-github-action`(버그)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B11-slack-github-action%ED%98%84%EC%9E%AC-%EB%B2%84%EA%B7%B8-%EC%9E%88%EC%9D%8C)
+    * [워크플로우 작성2: `slack-github-action`(버그 우회)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B12-slack-github-action%EB%B2%84%EA%B7%B8-%EC%9A%B0%ED%9A%8C)
+    * [워크플로우 작성3: `action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B13-action-slack)
+
+<br>
+
+---
+
 ## 🌿 브랜치 설명
 
-* **`main`**: 조건문을 적용하지 않은 워크플로우
-* **`dev`**: `main`과 동일
-* **`test`**: `main`과 동일. 해당 브랜치에 PR을 넣으면 워크플로우가 트리거됩니다.
-* **`using-if`**: 조건문을 사용한 워크플로우
+* **[`main`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main)**: 조건문을 적용하지 않은 워크플로우
+* **[`dev`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/dev)**: `main`과 동일
+* **[`test`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/test)**: `main`과 동일. 해당 브랜치에 PR을 넣으면 워크플로우가 트리거됩니다.
+* **[`using-if`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/using-if)**: 조건문을 사용한 워크플로우
 
 <br>
 
 아래 브랜치는 `main`을 기반으로 합니다.
 
-* **`slack/slack-github-action-bug`**: `slackapi/slack-github-action@v1.27.0`을 사용합니다. 버그가 있습니다.
-* **`slack/slack-github-action-workaround`**: `slackapi/slack-github-action@v1.27.0`을 사용하지만, 버그를 우회한 방법입니다.
-* **`slack/action-slack`**: `8398a7/action-slack`을 사용합니다
+* **[`slack/slack-github-action-bug`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-bug)**: `slackapi/slack-github-action@v1.27.0`을 사용합니다. 버그가 있습니다.
+* **[`slack/slack-github-action-workaround`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-workaround)**: `slackapi/slack-github-action@v1.27.0`을 사용하지만, 버그를 우회한 방법입니다.
+* **[`slack/action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/action-slack)**: `8398a7/action-slack`을 사용합니다
 
 <br>
 
