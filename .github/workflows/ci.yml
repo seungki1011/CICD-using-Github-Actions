@@ -56,6 +56,8 @@ jobs:
         if: success() || failure()
         uses: slackapi/slack-github-action@v1.27.0
         env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
           PULL_REQUEST_JOB_STATUS: ${{ job.status }}
           PULL_REQUEST_JOB_STATUS_COLOR: ${{ job.status == 'success' && vars.COLOR_GREEN || job.status == 'failure' && vars.COLOR_RED || vars.COLOR_ORANGE }}
         with:
