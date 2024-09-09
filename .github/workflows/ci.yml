@@ -1,30 +1,22 @@
-# 워크플로우의 이름을 지정합니다
-# 대시보드에서 워크플로우를 구분할 때 사용됩니다
 name: CI Pipeline
 
-# Event
-on: # 워크플로우가 실행될 조건을 정의합니다
-  pull_request: # PR을 조건으로 설정합니다
+on:
+  pull_request:
     branches:
-      - test # test 브랜치로 PR이 열리면 실행되도록 지정
+      - test
 
-# Jobs: 필요한 Job을 병렬 또는 (의존성에 의해)순차적으로 실행
-jobs: # 아래 계층에 수행할 Job을 정의합니다
+jobs:
 
-  # Build Job
   build:
-    runs-on: ubuntu-latest # 해당 Job의 러너 환경을 지정합니다
+    runs-on: ubuntu-latest
 
-    # 아래에 build의 Step들을 정의합니다
     steps:
-      # 1. 리포지토리에서 소스 코드를 체크아웃(복제)
-      - name: Checkout code # name으로 각 Step의 이름을 부여합니다
-        uses: actions/checkout@v3 # uses를 통해 액션을 호출합니다
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      # 2. Gradle 라이브러리 캐싱
       - name: Cache Gradle packages
         uses: actions/cache@v3
-        with: # with를 통해 액션에 대한 추가적인 설정을 지정할 수 있습니다
+        with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
@@ -32,29 +24,47 @@ jobs: # 아래 계층에 수행할 Job을 정의합니다
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 3. Java 17 설치
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 4. gradlew에 권한 부여
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew # run으로 직접 명령어를 실행할 수 있습니다
+        run: chmod +x gradlew
 
-      # 5. 의존성 설치 및 빌드
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
-  # Test Job
-  # 빌드에서 테스트를 진행하기 때문에 해당 Job은 제외해도 됩니다. 그러나 needs를 설명하기 위해 편의상 추가했습니다.
+      # 추가
+      - name: Leave a comment for test coverage
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.2
+        with:
+          title: 📊 Test Coverage Report
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml # JaCoCo 리포트 위치
+          token: ${{ github.token }}
+          min-coverage-overall: 80 # 전체 프로젝트의 커버리지가 80% 이상이어야 통과
+          min-coverage-changed-files: 80 # 수정된 파일에 대한 최소 커버리지가 80% 이상이어야 통과
+          pass-emoji: '✅' # 통과 이모지 (default : ":apple:")
+          # update-comment: true # true로 설정하는 경우 기존 코멘트를 업데이트하는 형태로 동작
+
+      # 슬랙 알림 추가
+      - name: Slack message with build result
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
   test:
     runs-on: ubuntu-latest
-    needs: build  # build가 성공적으로 완료되어야 수행된다는 의미(의존성 설정)
+    needs: build
 
     steps:
-      # 기존 체크아웃, JDK 설치 과정
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -64,6 +74,5 @@ jobs: # 아래 계층에 수행할 Job을 정의합니다
           distribution: 'temurin'
           java-version: '17'
 
-      # 6. 테스트 실행
       - name: Run tests
         run: ./gradlew test --no-daemon
