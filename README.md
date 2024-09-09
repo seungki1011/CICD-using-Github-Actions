@@ -26,6 +26,9 @@
    * [워크플로우 작성1: `slack-github-action`(버그)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B11-slack-github-action%ED%98%84%EC%9E%AC-%EB%B2%84%EA%B7%B8-%EC%9E%88%EC%9D%8C)
    * [워크플로우 작성2: `slack-github-action`(버그 우회)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B12-slack-github-action%EB%B2%84%EA%B7%B8-%EC%9A%B0%ED%9A%8C)
    * [워크플로우 작성3: `action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B13-action-slack)
+9. [📊 JaCoCo를 이용한 코드 커버리지 추가]()
+   * [`build.gradle` 설정]()
+   * [워크플로우 추가]()
 
 <br>
 
@@ -40,11 +43,10 @@
 
 <br>
 
-아래 브랜치는 `main`을 기반으로 합니다.
-
 * **[`slack/slack-github-action-bug`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-bug)**: `slackapi/slack-github-action@v1.27.0`을 사용합니다. 버그가 있습니다.
 * **[`slack/slack-github-action-workaround`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-workaround)**: `slackapi/slack-github-action@v1.27.0`을 사용하지만, 버그를 우회한 방법입니다.
 * **[`slack/action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/action-slack)**: `8398a7/action-slack`을 사용합니다
+* **[`coverage/jacoco-report`](https://github.com/Madrapps/jacoco-report?tab=readme-ov-file)**: `Madrapps/jacoco-report`를 사용합니다. (슬랙 알림도 추가)
 
 <br>
 
@@ -943,10 +945,197 @@ jobs:
 
 ---
 
+## 📊 JaCoCo를 이용한 코드 커버리지 추가
+
+### `build.gradle` 설정
+
+[JaCoCo (Java Code Coverage)](https://docs.gradle.org/current/userguide/jacoco_plugin.html)는 **Java 애플리케이션의 코드 커버리지를 측정하기 위한 오픈 소스 도구**입니다. 코드 커버리지는 단위 테스트나 통합 테스트에서 코드의 어느 부분이 실행되었는지를 나타내는 지표입니다. 이를 통해 작성된 테스트가 얼마나 효과적인지, 코드의 어느 부분이 테스트되지 않았는지 확인할 수 있습니다.
+
+JaCoCo를 이용해서 **코드 커버리지(code coverage)를 측정**하고, **해당 커버리지 리포트를 댓글(comment)로 달아주는 워크플로우를 추가** 해봅시다.
+
+<br>
+
+먼저 JaCoCo를 사용하기 위해서 `build.gradle`에 필요한 설정을 추가해줍니다.
+
+```groovy
+plugins {
+  // ...
+	id 'jacoco' // 추가
+}
+
+jacoco {
+	toolVersion = "0.8.10" // jacoco 버전 명시
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true // madrapps/jacoco-report를 사용하기 위해서 xml 리포트 사용
+		html.required = true
+	}
+  
+  // 각 리포트 타입 마다 저장 경로를 설정할 수 있다
+	//  html.destination file("$buildDir/jacoco/html")
+  //  xml.destination file("$buildDir/jacoco/xml")
+
+	// xml 기본 저장 경로: $buildDir/reports/jacoco/test/jacocoTestReport.xml
+
+	// 보고서에 표시되는 걸 제외하고 싶은 클래스를 명시
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, excludes: [
+            // 나의 프로젝트에 맞게 변경 {그룹이름}/{프로젝트명}
+							"seungki/cicdpractice/api/domain/**",
+							"**/*Application*",
+							"**/*Request*",
+							"**/*Response*",
+							"**/*Exception*"
+					])
+				})
+		)
+	// 보고서를 생성하고 나서야 테스트 커버리지 검증을 진행
+	finalizedBy(jacocoTestCoverageVerification)
+}
+  
+// 커버리지 검증을 위한 기준 제시
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+
+			/**
+			 * element: 커버리지를 체크하는 기준
+			 *
+			 * BUNDLE: 전체 프로젝트의 모든 파일(default)
+			 * CLASS: 클래스
+			 * METHOD: 메서드
+			 * PACKAGE: 패키지
+			 * SOURCEFILE: 소스 파일
+			 **/
+			enabled = true
+			element = 'CLASS'
+
+			/**
+			 * counter: 커버리지 측정을 위한 최소의 단위
+			 *
+			 * BRANCH: 조건문의 분기 수
+			 * CLASS: 클래스의 수
+			 * COMPLEXITY: 복잡도
+			 * INSTRUCTION: Java 바이트코드 명령의 수(default)
+			 * METHOD: 메서드의 수
+			 * LINE: 빈 줄을 제외한 실제 코드의 라인 수
+			 **/
+
+			/**
+			 * value: 커버리지의 측정 메트릭(metric)
+			 *
+			 * TOTALCOUNT: 전체 개수
+			 * MISSEDCOUNT: 커버되지 않은 개수
+			 * COVEREDCOUNT: 커버된 개수
+			 * MISSEDRATIO: 커버되지 않은 비율. 0 ~ 1 사이의 숫자로, 1이 100%.
+			 * COVEREDRATIO: 커버된 비율. 0 ~ 1 사이의 숫자로, 1이 100%. (default)
+			 **/
+
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.80 // value에 대한 최소 통과 기준
+			}
+
+			// 커버리지 체크를 제외할 클래스를 명시
+			// jacocoTestReport과 가르게 패키지 경로를 적어줘야 한다
+			excludes = [
+					"seungki.cicdpractice.api.domain.**",
+					"**.*Application*",
+					"**.*Request*",
+					"**.*Response*",
+					"**.*Exception*"
+			]
+		}
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport // 항상 테스트가 완료되어야 리포트 생성
+}
+```
+
+<br>
+
+`.gradlew test` 또는 인텔리제이의 Gradle 도구에 들어가서 `Tasks>verification>test`를 실행해봅시다.
+
+<br>
+
+![cifail2](./img/README/gradletest.png)
+
+<p align="center">Gradle > Tasks > verification > test</p>
+
+<br>
+
+다음과 같은 결과를 얻었습니다.
+
+<br>
+
+![cifail2](./img/README/coveragefail.png)
+
+![cifail2](./img/README/failreport.png)
+
+<p align="center">service 커버리지의 최소 조건을 만족하지 못한다</p>
+
+현재 컨트롤러 계층의 테스트만 작성했기 때문에, **서비스 계층에 대한 커버리지 조건을 만족하지 못하여 실패**했습니다. 서비스에 대한 **테스트를 추가하고 다시 시도**해보겠습니다.
+
+<br>
+
+![cifail2](./img/README/jacocosuccess.png)
+
+<p align="center">최소 기준을 만족하고, 통과된다</p>
+
+<br>
+
+---
+
+### 워크플로우 추가
+
+이번에는 [`madrapps/jacoco-report`](https://github.com/Madrapps/jacoco-report)를 사용해서 **코드 커버리지에 대한 리포트를 자동으로 댓글로 달아주는 스텝을 추가**해봅시다. 
+
+<br>
+
+```yaml
+# 추가
+- name: Leave a comment for test coverage
+  id: jacoco
+  uses: madrapps/jacoco-report@v1.2
+  with:
+    title: 📊 Test Coverage Report
+    paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml # JaCoCo 리포트 위치
+    token: ${{ github.token }}
+    min-coverage-overall: 80 # 전체 프로젝트의 커버리지가 80% 이상이어야 통과
+    min-coverage-changed-files: 80 # 수정된 파일에 대한 최소 커버리지가 80% 이상이어야 통과
+    pass-emoji: '✅' # 통과 이모지 (default : ":apple:")
+    # update-comment: true # true로 설정하는 경우 기존 코멘트를 업데이트하는 형태로 동작
+```
+
+<br>
+
+
+
+
+
+---
+
 ## 📑 Reference
 
-1. [https://pozafly.github.io/dev-ops/cache-and-restore-keys-in-github-actions/](https://pozafly.github.io/dev-ops/cache-and-restore-keys-in-github-actions/)
-2. [https://fe-developers.kakaoent.com/2022/220106-github-actions/](https://fe-developers.kakaoent.com/2022/220106-github-actions/)
-3. [https://hyperconnect.github.io/2021/11/08/github-actions-for-everyone-1.html](https://hyperconnect.github.io/2021/11/08/github-actions-for-everyone-1.html)
-4. [https://github.com/8398a7/action-slack](https://github.com/8398a7/action-slack)
-5. [https://github.com/slackapi/slack-github-action](https://github.com/slackapi/slack-github-action)
+* **GitHub Actions 설정**
+  * [https://pozafly.github.io/dev-ops/cache-and-restore-keys-in-github-actions/](https://pozafly.github.io/dev-ops/cache-and-restore-keys-in-github-actions/)
+  * [https://fe-developers.kakaoent.com/2022/220106-github-actions/](https://fe-developers.kakaoent.com/2022/220106-github-actions/)
+  * [https://hyperconnect.github.io/2021/11/08/github-actions-for-everyone-1.html](https://hyperconnect.github.io/2021/11/08/github-actions-for-everyone-1.html)
+
+* **Slack Notification 설정**
+  * [https://github.com/8398a7/action-slack](https://github.com/8398a7/action-slack)
+  * [https://github.com/slackapi/slack-github-action](https://github.com/slackapi/slack-github-action)
+
+* **JaCoCo 설정**
+  * [https://techblog.woowahan.com/2661/](https://techblog.woowahan.com/2661/)
+  * [https://docs.gradle.org/current/userguide/jacoco_plugin.html](https://docs.gradle.org/current/userguide/jacoco_plugin.html)
+  * [https://cl8d.tistory.com/119](https://cl8d.tistory.com/119)
+  * [https://github.com/Madrapps/jacoco-report?tab=readme-ov-file](https://github.com/Madrapps/jacoco-report?tab=readme-ov-file)
