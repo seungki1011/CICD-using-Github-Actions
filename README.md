@@ -26,9 +26,9 @@
    * [워크플로우 작성1: `slack-github-action`(버그)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B11-slack-github-action%ED%98%84%EC%9E%AC-%EB%B2%84%EA%B7%B8-%EC%9E%88%EC%9D%8C)
    * [워크플로우 작성2: `slack-github-action`(버그 우회)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B12-slack-github-action%EB%B2%84%EA%B7%B8-%EC%9A%B0%ED%9A%8C)
    * [워크플로우 작성3: `action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B13-action-slack)
-9. [📊 JaCoCo를 이용한 코드 커버리지 추가]()
-   * [`build.gradle` 설정]()
-   * [워크플로우 추가]()
+9. [📊 JaCoCo를 이용한 코드 커버리지 추가](https://github.com/seungki1011/CICD-using-Github-Actions?tab=readme-ov-file#-jacoco%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%BD%94%EB%93%9C-%EC%BB%A4%EB%B2%84%EB%A6%AC%EC%A7%80-%EC%B6%94%EA%B0%80)
+   * [`build.gradle` 설정](https://github.com/seungki1011/CICD-using-Github-Actions?tab=readme-ov-file#buildgradle-%EC%84%A4%EC%A0%95)
+   * [워크플로우 추가](https://github.com/seungki1011/CICD-using-Github-Actions?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%B6%94%EA%B0%80)
 
 <br>
 
@@ -46,7 +46,7 @@
 * **[`slack/slack-github-action-bug`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-bug)**: `slackapi/slack-github-action@v1.27.0`을 사용합니다. 버그가 있습니다.
 * **[`slack/slack-github-action-workaround`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-workaround)**: `slackapi/slack-github-action@v1.27.0`을 사용하지만, 버그를 우회한 방법입니다.
 * **[`slack/action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/action-slack)**: `8398a7/action-slack`을 사용합니다
-* **[`coverage/jacoco-report`](https://github.com/Madrapps/jacoco-report?tab=readme-ov-file)**: `Madrapps/jacoco-report`를 사용합니다. (슬랙 알림도 추가)
+* **[`coverage/jacoco-report`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/coverage/jacoco-report)**: `Madrapps/jacoco-report`를 사용합니다. (슬랙 알림도 추가)
 
 <br>
 
@@ -960,103 +960,103 @@ JaCoCo를 이용해서 **코드 커버리지(code coverage)를 측정**하고, *
 ```groovy
 plugins {
   // ...
-	id 'jacoco' // 추가
+  id 'jacoco' // 추가
 }
 
 jacoco {
-	toolVersion = "0.8.10" // jacoco 버전 명시
+  toolVersion = "0.8.10" // jacoco 버전 명시
 }
 
 jacocoTestReport {
-	reports {
-		xml.required = true // madrapps/jacoco-report를 사용하기 위해서 xml 리포트 사용
-		html.required = true
+  reports {
+    xml.required = true // madrapps/jacoco-report를 사용하기 위해서 xml 리포트 사용
+    html.required = true
 	}
   
   // 각 리포트 타입 마다 저장 경로를 설정할 수 있다
-	//  html.destination file("$buildDir/jacoco/html")
+  //  html.destination file("$buildDir/jacoco/html")
   //  xml.destination file("$buildDir/jacoco/xml")
 
-	// xml 기본 저장 경로: $buildDir/reports/jacoco/test/jacocoTestReport.xml
+  // xml 기본 저장 경로: $buildDir/reports/jacoco/test/jacocoTestReport.xml
 
-	// 보고서에 표시되는 걸 제외하고 싶은 클래스를 명시
-	afterEvaluate {
-		classDirectories.setFrom(
-				files(classDirectories.files.collect {
-					fileTree(dir: it, excludes: [
+  // 보고서에 표시되는 걸 제외하고 싶은 클래스를 명시
+  afterEvaluate {
+    classDirectories.setFrom(
+        files(classDirectories.files.collect {
+          fileTree(dir: it, excludes: [
             // 나의 프로젝트에 맞게 변경 {그룹이름}/{프로젝트명}
-							"seungki/cicdpractice/api/domain/**",
-							"**/*Application*",
-							"**/*Request*",
-							"**/*Response*",
-							"**/*Exception*"
-					])
-				})
-		)
-	// 보고서를 생성하고 나서야 테스트 커버리지 검증을 진행
-	finalizedBy(jacocoTestCoverageVerification)
+              "seungki/cicdpractice/api/domain/**",
+              "**/*Application*",
+              "**/*Request*",
+              "**/*Response*",
+              "**/*Exception*"
+          ])
+        })
+    )
+  // 보고서를 생성하고 나서야 테스트 커버리지 검증을 진행
+  finalizedBy(jacocoTestCoverageVerification)
 }
   
 // 커버리지 검증을 위한 기준 제시
 jacocoTestCoverageVerification {
-	violationRules {
-		rule {
+  violationRules {
+    rule {
 
-			/**
-			 * element: 커버리지를 체크하는 기준
-			 *
-			 * BUNDLE: 전체 프로젝트의 모든 파일(default)
-			 * CLASS: 클래스
-			 * METHOD: 메서드
-			 * PACKAGE: 패키지
-			 * SOURCEFILE: 소스 파일
-			 **/
-			enabled = true
-			element = 'CLASS'
+      /**
+       * element: 커버리지를 체크하는 기준
+       *
+       * BUNDLE: 전체 프로젝트의 모든 파일(default)
+       * CLASS: 클래스
+       * METHOD: 메서드
+       * PACKAGE: 패키지
+       * SOURCEFILE: 소스 파일
+       **/
+      enabled = true
+      element = 'CLASS'
 
-			/**
-			 * counter: 커버리지 측정을 위한 최소의 단위
-			 *
-			 * BRANCH: 조건문의 분기 수
-			 * CLASS: 클래스의 수
-			 * COMPLEXITY: 복잡도
-			 * INSTRUCTION: Java 바이트코드 명령의 수(default)
-			 * METHOD: 메서드의 수
-			 * LINE: 빈 줄을 제외한 실제 코드의 라인 수
-			 **/
+      /**
+       * counter: 커버리지 측정을 위한 최소의 단위
+       *
+       * BRANCH: 조건문의 분기 수
+       * CLASS: 클래스의 수
+       * COMPLEXITY: 복잡도
+       * INSTRUCTION: Java 바이트코드 명령의 수(default)
+       * METHOD: 메서드의 수
+       * LINE: 빈 줄을 제외한 실제 코드의 라인 수
+       **/
 
-			/**
-			 * value: 커버리지의 측정 메트릭(metric)
-			 *
-			 * TOTALCOUNT: 전체 개수
-			 * MISSEDCOUNT: 커버되지 않은 개수
-			 * COVEREDCOUNT: 커버된 개수
-			 * MISSEDRATIO: 커버되지 않은 비율. 0 ~ 1 사이의 숫자로, 1이 100%.
-			 * COVEREDRATIO: 커버된 비율. 0 ~ 1 사이의 숫자로, 1이 100%. (default)
-			 **/
+      /**
+       * value: 커버리지의 측정 메트릭(metric)
+       *
+       * TOTALCOUNT: 전체 개수
+       * MISSEDCOUNT: 커버되지 않은 개수
+       * COVEREDCOUNT: 커버된 개수
+       * MISSEDRATIO: 커버되지 않은 비율. 0 ~ 1 사이의 숫자로, 1이 100%.
+       * COVEREDRATIO: 커버된 비율. 0 ~ 1 사이의 숫자로, 1이 100%. (default)
+       **/
 
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.80 // value에 대한 최소 통과 기준
-			}
+      limit {
+        counter = 'LINE'
+        value = 'COVEREDRATIO'
+        minimum = 0.80 // value에 대한 최소 통과 기준
+      }
 
-			// 커버리지 체크를 제외할 클래스를 명시
-			// jacocoTestReport과 가르게 패키지 경로를 적어줘야 한다
-			excludes = [
-					"seungki.cicdpractice.api.domain.**",
-					"**.*Application*",
-					"**.*Request*",
-					"**.*Response*",
-					"**.*Exception*"
-			]
-		}
-	}
+      // 커버리지 체크를 제외할 클래스를 명시
+      // jacocoTestReport과 가르게 패키지 경로를 적어줘야 한다
+      excludes = [
+          "seungki.cicdpractice.api.domain.**",
+          "**.*Application*",
+          "**.*Request*",
+          "**.*Response*",
+          "**.*Exception*"
+      ]
+    }
+  }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
-	finalizedBy jacocoTestReport // 항상 테스트가 완료되어야 리포트 생성
+  useJUnitPlatform()
+  finalizedBy jacocoTestReport // 항상 테스트가 완료되어야 리포트 생성
 }
 ```
 
