@@ -26,9 +26,9 @@
    * [워크플로우 작성1: `slack-github-action`(버그)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B11-slack-github-action%ED%98%84%EC%9E%AC-%EB%B2%84%EA%B7%B8-%EC%9E%88%EC%9D%8C)
    * [워크플로우 작성2: `slack-github-action`(버그 우회)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B12-slack-github-action%EB%B2%84%EA%B7%B8-%EC%9A%B0%ED%9A%8C)
    * [워크플로우 작성3: `action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B13-action-slack)
-9. [📊 JaCoCo를 이용한 코드 커버리지 추가]()
-   * [`build.gradle` 설정]()
-   * [워크플로우 추가]()
+9. [📊 JaCoCo를 이용한 코드 커버리지 추가](https://github.com/seungki1011/CICD-using-Github-Actions?tab=readme-ov-file#-jacoco%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%BD%94%EB%93%9C-%EC%BB%A4%EB%B2%84%EB%A6%AC%EC%A7%80-%EC%B6%94%EA%B0%80)
+   * [`build.gradle` 설정](https://github.com/seungki1011/CICD-using-Github-Actions?tab=readme-ov-file#buildgradle-%EC%84%A4%EC%A0%95)
+   * [워크플로우 추가](https://github.com/seungki1011/CICD-using-Github-Actions?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%B6%94%EA%B0%80)
 
 <br>
 
@@ -46,7 +46,7 @@
 * **[`slack/slack-github-action-bug`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-bug)**: `slackapi/slack-github-action@v1.27.0`을 사용합니다. 버그가 있습니다.
 * **[`slack/slack-github-action-workaround`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/slack-github-action-workaround)**: `slackapi/slack-github-action@v1.27.0`을 사용하지만, 버그를 우회한 방법입니다.
 * **[`slack/action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/slack/action-slack)**: `8398a7/action-slack`을 사용합니다
-* **[`coverage/jacoco-report`](https://github.com/Madrapps/jacoco-report?tab=readme-ov-file)**: `Madrapps/jacoco-report`를 사용합니다. (슬랙 알림도 추가)
+* **[`coverage/jacoco-report`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/coverage/jacoco-report)**: `Madrapps/jacoco-report`를 사용합니다. (슬랙 알림도 추가)
 
 <br>
 
