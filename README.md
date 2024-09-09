@@ -26,6 +26,9 @@
    * [워크플로우 작성1: `slack-github-action`(버그)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B11-slack-github-action%ED%98%84%EC%9E%AC-%EB%B2%84%EA%B7%B8-%EC%9E%88%EC%9D%8C)
    * [워크플로우 작성2: `slack-github-action`(버그 우회)](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B12-slack-github-action%EB%B2%84%EA%B7%B8-%EC%9A%B0%ED%9A%8C)
    * [워크플로우 작성3: `action-slack`](https://github.com/seungki1011/CICD-using-Github-Actions/tree/main?tab=readme-ov-file#%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EC%9E%91%EC%84%B13-action-slack)
+9. [📊 JaCoCo를 이용한 코드 커버리지 추가]()
+   * [`build.gradle` 설정]()
+   * [워크플로우 추가]()
 
 <br>
 
@@ -1113,14 +1116,6 @@ tasks.named('test') {
 ```
 
 <br>
-
-
-
-
-
-
-
-
 
 
 
