@@ -49,17 +49,21 @@ jobs:
           pass-emoji: '✅' # 통과 이모지 (default : ":apple:")
           # update-comment: true # true로 설정하는 경우 기존 코멘트를 업데이트하는 형태로 동작
 
-      # Checkstyle 추가
+      # Checkstyle 추가 (버그 해결 못함)
+      #      - name: Run check style
+      #        uses: nikitasavinov/checkstyle-action@master
+      #        with:
+      #          github_token: ${{ secrets.GITHUB_TOKEN }}
+      #          reporter: 'github-pr-check'
+      #          tool_name: 'checkstyle'
+      #          checkstyle_version: 10.18.0
+      #          checkstyle_config: './config/checkstyle/naver-checkstyle-rules.xml'
+      #          properties_file: './config/checkstyle/naver-checkstyle-suprressions.xml'
       - name: Run check style
-        uses: nikitasavinov/checkstyle-action@master
+        uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
-          tool_name: 'checkstyle'
-          checkstyle_version: 10.18.0
-          checkstyle_config: './config/checkstyle/naver-checkstyle-rules.xml'
-          properties_file: './config/checkstyle/naver-checkstyle-suprressions.xml'
-
+          title: 🔍 Checkstyle Report
+          path: 'build/reports/checkstyle'
   
   test:
     runs-on: ubuntu-latest
