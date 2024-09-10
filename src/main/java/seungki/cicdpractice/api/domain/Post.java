@@ -31,14 +31,14 @@ public class Post {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (obj == null || getClass() != obj.getClass()) {
+		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Post post = (Post)obj;
+		Post post = (Post)o;
 		return Objects.equals(id, post.id);
 	}
 
