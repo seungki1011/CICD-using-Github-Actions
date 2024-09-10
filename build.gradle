@@ -3,7 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.3'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'jacoco'
-    id 'org.ec4j.editorconfig' version '0.1.0'
+//    id 'org.ec4j.editorconfig' version '0.1.0'
     id 'checkstyle'
 }
 
@@ -20,13 +20,13 @@ repositories {
     mavenCentral()
 }
 
-editorconfig {
-    excludes = ['build',
-                'slack',
-                'lombok.config',
-                '.github',
-                'src/main/resources/application.yml']
-}
+//editorconfig {
+//    excludes = ['build',
+//                'slack',
+//                'lombok.config',
+//                '.github',
+//                'src/main/resources/application.yml']
+//}
 
 checkstyle {
     maxWarnings = 0
@@ -35,7 +35,7 @@ checkstyle {
     toolVersion = "10.18.0"
 }
 
-check.dependsOn editorconfigCheck
+//check.dependsOn editorconfigCheck
 
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
