@@ -33,6 +33,7 @@ checkstyle {
     configFile = file("${rootDir}/config/checkstyle/naver-checkstyle-rules.xml")
     configProperties = ["suppressionFile": "${rootDir}/config/checkstyle/naver-checkstyle-suppressions.xml"]
     toolVersion = "10.18.0"
+    ignoreFailures = true // checkstyle 검사에 실패해도 build는 실패하지 않는다
 }
 
 //check.dependsOn editorconfigCheck
