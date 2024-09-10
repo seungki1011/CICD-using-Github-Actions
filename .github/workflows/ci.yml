@@ -49,16 +49,15 @@ jobs:
           pass-emoji: '✅' # 통과 이모지 (default : ":apple:")
           # update-comment: true # true로 설정하는 경우 기존 코멘트를 업데이트하는 형태로 동작
 
-      # 슬랙 알림 추가
-      - name: Slack message with build result
-        if: always()
-        uses: 8398a7/action-slack@v3
+      # Checkstyle 추가
+      - name: Run check style
+        uses: nikitasavinov/checkstyle-action@master
         with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-check'
+          tool_name: 'checkstyle'
+          checkstyle_version: 10.18.0
+          checkstyle_config: 'config/checkstyle/naver-checkstyle-rules.xml'
 
   test:
     runs-on: ubuntu-latest
