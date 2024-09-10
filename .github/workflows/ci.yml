@@ -58,7 +58,9 @@ jobs:
           tool_name: 'checkstyle'
           checkstyle_version: 10.18.0
           checkstyle_config: 'config/checkstyle/naver-checkstyle-rules.xml'
+          properties_file: 'config/checkstyle/naver-checkstyle-suprressions.xml'
 
+  
   test:
     runs-on: ubuntu-latest
     needs: build
