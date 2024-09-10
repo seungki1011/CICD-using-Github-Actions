@@ -24,7 +24,6 @@ editorconfig {
     excludes = ['build',
                 'slack',
                 'lombok.config',
-                '.editorconfig',
                 '.github',
                 'src/main/resources/application.yml']
 }
